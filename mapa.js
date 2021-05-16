@@ -1,49 +1,3 @@
-var trimestres = new Array(
-  "2015TII",
-  "2015TI",
-  "2014TIV",
-  "2014TIII",
-  "2014TII",
-  "2014TI",
-  "2013TIV",
-  "2013TIII",
-  "2013TII",
-  "2013TI",
-  "2012TIV",
-  "2012TIII",
-  "2012TII",
-  "2012TI",
-  "2011TIV",
-  "2011TIII",
-  "2011TII",
-  "2011TI",
-  "2010TIV",
-  "2010TIII",
-  "2010TII",
-  "2010TI",
-  "2009TIV",
-  "2009TIII",
-  "2009TII",
-  "2009TI",
-  "2008TIV",
-  "2008TIII",
-  "2008TII",
-  "2008TI",
-  "2007TIV",
-  "2007TIII",
-  "2007TII",
-  "2007TI",
-  "2006TIV",
-  "2006TIII",
-  "2006TII",
-  "2006TI",
-  "2005TIV",
-  "2005TIII",
-  "2005TII",
-  "2005TI"
-);
-trimestres.reverse();
-
 function addComas(n) {
   var formatValue = d3.format("0,000");
   return formatValue(n)
@@ -94,27 +48,37 @@ var mapCan = d3
   .append("svg")
   .attr("width", wCan)
   .attr("height", hCan);
-d3.select("#tasa").html(
-  "Trimestre " + trimestres[trimestres.length - 1].substring(5)
-);
-d3.select("#year").html(trimestres[trimestres.length - 1].substring(0, 4));
+
+
+// d3.select("#year").html(trimestres[trimestres.length - 1].substring(0, 4));
 
 var height = 330,
   width = 885,
   trans = 60;
 var w = 950,
   h = 380;
-var aux = trimestres.length - 1;
+var aux = 62;
 var width_slider = 920;
 var height_slider = 50;
 
 var historicoUrl = 'https://www.luissevillano.net/historical-evolution-of-the-unemployment-rate-in-spain/data/historico.csv';
 var provinciasUrl = 'https://raw.githubusercontent.com/gikajavi/covid-spain/main/Provincias.json';
 var canarianUrl = 'https://raw.githubusercontent.com/gikajavi/covid-spain/main/canarian.json';
+var datosUrl = 'https://raw.githubusercontent.com/gikajavi/covid-spain/main/datos_semana_agregados.json';
+
+
+
+var dJson = {}
+// Cargar nuestro JSON con los datos
+d3.json(datosUrl, function(data) {
+  dJson = data;
+})
+
 
 d3.csv(historicoUrl, function(data) {
   d3.json(provinciasUrl, function(json) {
     d3.json(canarianUrl, function(can) {
+
       /* ------SLIDER----- */
       var svg = d3
         .select("#slider")
@@ -122,13 +86,13 @@ d3.csv(historicoUrl, function(data) {
         .append("svg")
         .attr("width", width_slider)
         .attr("height", height_slider);
-      var yeardomain = [0, trimestres.length - 1];
-      var axisyears = [
-        parseFloat(trimestres[0].substring(0, 4)),
-        parseFloat(trimestres[0].substring(0, 4)),
-        parseFloat(trimestres[0].substring(0, 4)),
-        parseFloat(trimestres[trimestres.length - 1].substring(0, 4))
-      ];
+
+      // var axisyears = [
+      //   parseFloat(trimestres[0].substring(0, 4)),
+      //   parseFloat(trimestres[0].substring(0, 4)),
+      //   parseFloat(trimestres[0].substring(0, 4)),
+      //   parseFloat(trimestres[trimestres.length - 1].substring(0, 4))
+      // ];
 
       var pointerdata = [
         {
@@ -148,19 +112,23 @@ d3.csv(historicoUrl, function(data) {
           y: 0
         }
       ];
-      var scale = d3.scale
-        .linear()
-        .domain(yeardomain)
-        .rangeRound([0, width]);
+
+      // Nova escala
+      var scale2 = d3.scale
+          .linear()
+          .domain([0,62])
+          .rangeRound([0, width]);
+
+
       var x = d3.svg
         .axis()
-        .scale(scale)
+        .scale(scale2)
         .orient("top")
         .tickFormat(function(d) {
           return d;
         })
-        .tickSize(0)
-        .tickValues(axisyears);
+        .tickSize(0);
+        // .tickValues(axisyears);
       svg
         .append("g")
         .attr("class", "axis")
@@ -218,9 +186,11 @@ d3.csv(historicoUrl, function(data) {
 
       function dragmove() {
         var x = Math.max(0, Math.min(width, d3.event.x));
+
         d3.select(this).attr("x", x);
-        var z = parseInt(scale.invert(x));
+        var z = parseInt(scale2.invert(x));
         aux = z;
+
         drawMap(z);
       }
 
@@ -231,25 +201,8 @@ d3.csv(historicoUrl, function(data) {
       function dragend() {
         d3.select(".cursor").style("fill", "");
       }
-      for (var i = 0; i < data.length; i++) {
-        var codeState = data[i].code;
-        var dataValue = data[i][trimestres[trimestres.length - 1]];
-        //                console.log(dataValue);
-        for (var j = 0; j < json.features.length; j++) {
-          var jsonState = json.features[j].properties.code;
-          if (codeState == jsonState) {
-            json.features[j].properties.value = dataValue;
-            break;
-          }
-        }
-        for (var z = 0; z < can.features.length; z++) {
-          var canState = can.features[z].properties.code;
-          if (codeState == canState) {
-            can.features[z].properties.value = dataValue;
-            break;
-          }
-        }
-      }
+
+
       var cont = map
         .selectAll("#mapa path")
         .data(json.features)
@@ -289,12 +242,17 @@ d3.csv(historicoUrl, function(data) {
 
 
       function clickProvince(d) {
-        console.log(d)
+        // console.log(d)
         // alert('TODO: Dibujar el histograma!!');
+        // https://observablehq.com/@d3/histogram
+        // https://www.d3-graph-gallery.com/graph/histogram_basic.html
       }
 
 
       function mouseover(d) {
+        return ;
+
+
         d3.select(this)
           .attr("stroke-width", "1px")
           .attr("fill-opacity", "0.9");
@@ -330,38 +288,46 @@ d3.csv(historicoUrl, function(data) {
       }
       //maxMin(data, aux);
       function drawMap(index) {
-        d3.select("#tasa").html("Trimestre " + trimestres[index].substring(5));
-        d3.select("#year").html(trimestres[index].substring(0, 4));
+        curWeekFrom = Object.keys(dJson)[index-1];
+        if (!curWeekFrom)
+          curWeekFrom = '2020-02-28'
+        curWeekTo = Object.keys(dJson)[index];
+        d3.select("#year").html(curWeekFrom + '..' + curWeekTo);
+
+        // Setmana seleccionada
+        var curWeekKey = Object.keys(dJson)[index];
+        var weekData = dJson[curWeekKey];
+
         cont.style("fill", function(d) {
-          for (var i = 0; i < data.length; i++) {
-            var codeState = data[i].code;
-            var dataValue = data[i][trimestres[index]];
-            for (var j = 0; j < json.features.length; j++) {
-              var jsonState = json.features[j].properties.code;
-              if (codeState == jsonState) {
-                json.features[j].properties.value = dataValue;
-                break;
-              }
-            }
-          }
+
+          var mapCode = d.properties.code;
+          var curProvKey = parseInt(Object.keys(weekData)[mapCode]);
+          var dataProv = weekData[curProvKey];
+          // Actualizar el valor
+          d.properties.value = dataProv['num_casos2'];
+
           var value = d.properties.value;
           if (value) {
             return getColor(value);
           } else {
             return "#ccc";
           }
+
         });
+
+
         cont
           .on("mousemove", function(d) {
+            var mapCode = d.properties.code;
+            var curProvKey = parseInt(Object.keys(weekData)[mapCode]);
+            var dataProv = weekData[curProvKey];
+
             div.style("opacity", 0.9);
             div
               .html(
-                "<b>" +
-                  d.properties.name +
-                  "</b></br>Tasa de paro: <b>" +
-                  addComas(data[d.properties.code][trimestres[aux]]) +
-                  "%</b> <br>" +
-                  d.properties.comunidad
+                "<pre>" +
+                  JSON.stringify(dataProv, null, 2) +
+                  "</pre> <br>"
               )
               .style("left", function() {
                 if (d3.event.pageX > 780) {
@@ -376,37 +342,62 @@ d3.csv(historicoUrl, function(data) {
             return div.style("opacity", 0);
           })
           .on("mouseout", mouseout);
+
+
+
         isl.style("fill", function(d) {
-          for (var i = 0; i < data.length; i++) {
-            var codeState = data[i].code;
-            var dataValue = data[i][trimestres[index]];
-            for (var j = 0; j < can.features.length; j++) {
-              var jsonState = can.features[j].properties.code;
-              if (codeState == jsonState) {
-                can.features[j].properties.value = dataValue;
-                break;
-              }
-            }
-          }
+
+          var mapCode = d.properties.code;
+          var curProvKey = parseInt(Object.keys(weekData)[mapCode]);
+          var dataProv = weekData[curProvKey];
+          // Actualizar el valor
+          d.properties.value = dataProv['num_casos2'];
+
           var value = d.properties.value;
           if (value) {
             return getColor(value);
           } else {
             return "#ccc";
           }
+
+          //
+          // for (var i = 0; i < data.length; i++) {
+          //   var codeState = data[i].code;
+          //   var dataValue = data[i][trimestres[index]];
+          //   for (var j = 0; j < can.features.length; j++) {
+          //     var jsonState = can.features[j].properties.code;
+          //     if (codeState == jsonState) {
+          //       can.features[j].properties.value = dataValue;
+          //       break;
+          //     }
+          //   }
+          // }
+          // var value = d.properties.value;
+          // if (value) {
+          //   return getColor(value);
+          // } else {
+          //   return "#ccc";
+          // }
+
+
         });
+
+
         isl
           .on("mousemove", function(d) {
+
+            var mapCode = d.properties.code;
+            var curProvKey = parseInt(Object.keys(weekData)[mapCode]);
+            var dataProv = weekData[curProvKey];
+
             div.style("opacity", 0.9);
             div
-              .html(
-                "<b>" +
-                  d.properties.name +
-                  "</b></br>Tasa de paro: <b>" +
-                  addComas(data[d.properties.code][trimestres[aux]]) +
-                  "%</b> <br>" +
-                  d.properties.comunidad
-              )
+                .html(
+                    "<pre>" +
+                    JSON.stringify(dataProv, null, 2) +
+                    "</pre> <br>"
+                )
+
               .style("left", function() {
                 if (d3.event.pageX > 780) {
                   return d3.event.pageX - 180 + "px";
@@ -424,7 +415,14 @@ d3.csv(historicoUrl, function(data) {
       }
       maxMin(data, aux);
 
+
+
       function maxMin(d, index) {
+        // TODO: Trobar, per la setmana seleccionada, el max i el mínim del concepte a que ens estem referint
+        return null;
+
+
+
         d3.select("#minimoParo").html("");
         d3.select("#maximoParo").html("");
         d3.select("#mediaParo").html("");
@@ -436,7 +434,7 @@ d3.csv(historicoUrl, function(data) {
           provincia.push(d[i].state);
         }
         var max_min = d3.extent(datos);
-        console.log(max_min);
+        // console.log(max_min);
         var provinciaMax;
         var provinciaMin;
         for (var j = 0; j < data.length - 1; j++) {
@@ -469,6 +467,13 @@ d3.csv(historicoUrl, function(data) {
               "</span"
           );
       }
+
+
+      ////////////////////////////////
+      // Init:
+      ////////////////////////////////
+      drawMap(62)
+
     });
   });
 });

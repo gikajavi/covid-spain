@@ -213,8 +213,8 @@ path.cursor {
 
 #year {
   float: left;
-  font-size: 3em;
-  padding-top: 10px;
+  font-size: 26px;
+  padding-top: 18px;
   width: 300px;
   border-bottom: #777 1px solid;
 }
