@@ -1,6 +1,3 @@
-/* Author(s) = Manuel Maroto (@manuelgmaroto), Luis Sevillano (@SepirData)
- * Date: 2014 Oct
- */
 var trimestres = new Array(
   "2015TII",
   "2015TI",
@@ -112,8 +109,8 @@ var width_slider = 920;
 var height_slider = 50;
 
 var historicoUrl = 'https://www.luissevillano.net/historical-evolution-of-the-unemployment-rate-in-spain/data/historico.csv';
-var provinciasUrl = 'https://www.luissevillano.net/historical-evolution-of-the-unemployment-rate-in-spain/data/Provincias.json';
-var canarianUrl = 'https://www.luissevillano.net/historical-evolution-of-the-unemployment-rate-in-spain/data/canarian.json';
+var provinciasUrl = 'https://raw.githubusercontent.com/gikajavi/covid-spain/main/Provincias.json';
+var canarianUrl = 'https://raw.githubusercontent.com/gikajavi/covid-spain/main/canarian.json';
 
 d3.csv(historicoUrl, function(data) {
   d3.json(provinciasUrl, function(json) {
@@ -268,7 +265,9 @@ d3.csv(historicoUrl, function(data) {
         .attr("stroke-width", 0.3)
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
-        .on("mouseout", mouseout);
+        .on("mouseout", mouseout)
+          .on("click", clickProvince);
+      
       //canarias
       var isl = mapCan
         .selectAll("#canarias path")
@@ -285,7 +284,15 @@ d3.csv(historicoUrl, function(data) {
         .attr("stroke-width", 0.3)
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
-        .on("mouseout", mouseout);
+        .on("mouseout", mouseout)
+          .on("click", clickProvince);
+
+
+      function clickProvince(d) {
+        console.log(d)
+        // alert('TODO: Dibujar el histograma!!');
+      }
+
 
       function mouseover(d) {
         d3.select(this)
