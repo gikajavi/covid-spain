@@ -61,21 +61,11 @@ var aux = 62;
 var width_slider = 920;
 var height_slider = 50;
 
-var historicoUrl = 'https://www.luissevillano.net/historical-evolution-of-the-unemployment-rate-in-spain/data/historico.csv';
+var datosUrl = 'https://raw.githubusercontent.com/gikajavi/covid-spain/main/datos_semana_agregados.json';
 var provinciasUrl = 'https://raw.githubusercontent.com/gikajavi/covid-spain/main/Provincias.json';
 var canarianUrl = 'https://raw.githubusercontent.com/gikajavi/covid-spain/main/canarian.json';
-var datosUrl = 'https://raw.githubusercontent.com/gikajavi/covid-spain/main/datos_semana_agregados.json';
 
-
-
-var dJson = {}
-// Cargar nuestro JSON con los datos
-d3.json(datosUrl, function(data) {
-  dJson = data;
-})
-
-
-d3.csv(historicoUrl, function(data) {
+d3.json(datosUrl, function(dJson) {
   d3.json(provinciasUrl, function(json) {
     d3.json(canarianUrl, function(can) {
 
@@ -411,9 +401,9 @@ d3.csv(historicoUrl, function(data) {
             return div.style("opacity", 0);
           })
           .on("mouseout", mouseout);
-        maxMin(data, index);
+        // maxMin(data, index);
       }
-      maxMin(data, aux);
+      // maxMin(data, aux);
 
 
 
