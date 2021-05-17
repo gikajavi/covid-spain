@@ -1,6 +1,3 @@
-/* Author(s) = Luis Sevillano (@sepirdata), Manuel Maroto (@manuelgmaroto)
- * Date: 2015 Jan
- */
 html,
 body,
 div,
@@ -181,8 +178,20 @@ div.tooltip {
 #cajaDatos {
   float: left;
   width: 360px;
-  pointer-events: none;
+  font-size: 20px;
 }
+
+#criteri {
+  font-size: 20px;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  padding: 4px;
+}
+
+/*#cajaDatos div {*/
+/*  margin-top: 10px;*/
+/*}*/
+
 
 #cajaSlider {
   float: left;
@@ -211,7 +220,7 @@ path.cursor {
   padding-top: 30px;
 }
 
-#year {
+#setmana_rang {
   float: left;
   font-size: 26px;
   padding-top: 18px;
@@ -221,10 +230,10 @@ path.cursor {
 
 #maxMin {
   float: left;
-  width: 250px;
+  width: 360px;
 }
 
-#mediaParo {
+#media {
   margin-top: 20px;
   float: left;
   width: 300px;
@@ -237,20 +246,23 @@ path.cursor {
   width: 300px;
 }
 
-#maximoParo {
-  font-size: 2em;
+#maximo {
+  line-height: 1.5em;
+  font-size: 1.3em;
   padding-top: 20px;
   float: right;
 }
 
-#minimoParo {
+#minimo {
+  line-height: 1.5em;
   margin-top: 20px;
   float: right;
-  font-size: 2em;
+  font-size: 1.3em;
 }
 
 .icono {
   float: left;
+  clear: both;
 }
 
 .iconoMaximo {
@@ -303,7 +315,6 @@ path.cursor {
   text-align: center;
   padding: 10px 10px 10px 0;
   margin-top: 105px;
-  pointer-events: none;
 }
 
 .key {
@@ -325,25 +336,29 @@ path.cursor {
   height: 10px;
 }
 
-.masCinco .color {
+.tramo1 .color {
   background-color: #ecc5b4;
 }
 
-.masQuince .color {
+.tramo2 .color {
   background-color: #e3a78f;
 }
 
-.masVeinticinco .color {
+.tramo3 .color {
   background-color: #d9886c;
 }
 
-.masTreintaYCinco .color {
+.tramo4 .color {
   background-color: #d0694c;
 }
 
-.masCuarenta .color {
+.tramo5 .color {
   background-color: #a55036;
 }
+
+
+
+
 
 .textoLeyenda {
   height: 10px;
@@ -358,7 +373,6 @@ path.cursor {
   top: 25px;
 }
 
-//fin estilos leyenda
 .move:hover {
   cursor: pointer;
 }

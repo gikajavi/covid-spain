@@ -10,50 +10,75 @@
     <div id="wrapper">
       <div id="datosMapa">
         <div id="cajaDatos">
-          <div id="tasa-parados">
-            <div id="tasa">Setmana:</div>
-            <div id="year"></div>
+
+          <div>
+            <div>Criteri:</div>
+            <div>
+              <select id="criteri">
+                <option value="num_casos2">Nous casos</option>
+                <option value="num_casos_cum2">Total casos</option>
+                <option value="num_casos_avg7">Casos / 7 dies</option>
+                <option value="num_hosp">Noves hospitalitzacions</option>
+                <option value="num_hosp_cum">Total hospitalitzacions</option>
+                <option value="num_uci">Nous ingressos UCI</option>
+                <option value="num_uci_cum">Total ingressos UCI</option>
+                <option value="num_def">Nous decessos</option>
+                <option value="num_def_cum">Total decessos</option>
+              </select>
+            </div>
           </div>
+
+          <div>
+            <div>Setmana:</div>
+            <div id="setmana_rang"></div>
+          </div>
+
           <div id="maxMin">
-            <div id="mediaParo"></div>
+            <div id="media"></div>
             <div class="mediaNacional">media nacional</div>
             <div class="icono">
-              <div id="maximoParo"></div>
+              <div id="maximo">-</div>
               <div class="iconoMaximo"></div>
             </div>
             <div class="icono">
-              <div id="minimoParo"></div>
+              <div id="minimo">-</div>
               <div class="iconoMinimo"></div>
             </div>
           </div>
+
+
         </div>
+
         <div id="mapas">
           <div id="mapa"></div>
           <div id="canarias"></div>
         </div>
+
+
+
         <div id="leyenda">
           <div class="key">
-            <div class="masCinco">
-              <div class="textoLeyenda color"><span>10%</span></div>
+            <div class="tramo1">
+              <div class="textoLeyenda color"><span id="tr1">10%</span></div>
             </div>
           </div>
           <div class="key">
-            <div class="masQuince">
-              <div class="textoLeyenda color"><span>20</span></div>
+            <div class="tramo2">
+              <div class="textoLeyenda color"><span id="tr2">20</span></div>
             </div>
           </div>
           <div class="key">
-            <div class="masVeinticinco">
-              <div class="textoLeyenda color"><span>30</span></div>
+            <div class="tramo3">
+              <div class="textoLeyenda color"><span id="tr3">30</span></div>
             </div>
           </div>
           <div class="key">
-            <div class="masTreintaYCinco">
-              <div class="textoLeyenda color"><span>40</span></div>
+            <div class="tramo4">
+              <div class="textoLeyenda color"><span id="tr4">40</span></div>
             </div>
           </div>
           <div class="key">
-            <div class="masCuarenta">
+            <div class="tramo5">
               <div class="textoLeyenda color"></div>
             </div>
           </div>
@@ -61,14 +86,22 @@
             <div class="k"><div class="color" style="background: rgb(255, 231, 235);"></div><div class="text"><span>2%</span></div></div>
           -->
         </div>
+
+
+
       </div>
+
+
       <div id="cajaSlider">
         <div class="mano"></div>
         <div id="slider"></div>
         <div class="inicio">03/2020</div>
         <div class="final">05/2021</div>
       </div>
+
+
       <script src="mapa.js" type="text/javascript"></script>
+
     </div>
   </body>
 </html>

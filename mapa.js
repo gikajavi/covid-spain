@@ -1,22 +1,59 @@
 function addComas(n) {
   var formatValue = d3.format("0,000");
   return formatValue(n)
-    .replace(".", ",")
-    .replace(".", ",");
+    .replace(",", ".")
 }
 var colores = new Array("#ECC5B4", "#E3A78F", "#D9886C", "#D0694C", "#A55036");
 
+var labelCriteri = {
+  num_casos2: 'Nous casos',
+  num_casos_cum2: 'Total casos',
+  num_casos_avg7: 'Casos / 7 dies',
+  num_hosp: 'Noves hospitalitzacions',
+  num_hosp_cum: 'Total hospitalitzacions',
+  num_uci: 'Nous ingressos UCI',
+  num_uci_cum: 'Total ingressos UCI',
+  num_def: 'Nous decessos',
+  num_def_cum: 'Total decessos'
+}
+
+var rangos = {
+  num_casos2: [5000,1000,200,100],
+  num_casos_cum2: [100000,50000,10000,1000],
+  num_casos_avg7: [500,300,150,50],
+  num_hosp: [1000,500,100,50],
+  num_hosp_cum: [15000,7500,3000,500],
+  num_uci: [50,25,10,5],
+  num_uci_cum: [1000,500,250,100],
+  num_def: [100,50,25,10],
+  num_def_cum: [2000,1000,500,200]
+}
+
+function curCriteri() {
+  return document.getElementById('criteri').value;
+}
+
 function getColor(d) {
-  return d > 40
+  var criteri = rangos[curCriteri()];
+  return d > criteri[0]
     ? colores[4]
-    : d > 30
+    : d > criteri[1]
     ? colores[3]
-    : d > 20
+    : d > criteri[2]
     ? colores[2]
-    : d > 10
+    : d > criteri[3]
     ? colores[1]
     : colores[0];
 }
+
+function refreshLeyenda() {
+  var rangs = rangos[curCriteri()];
+  document.getElementById('tr1').innerHTML = addComas(rangs[3]);
+  document.getElementById('tr2').innerHTML = addComas(rangs[2]);
+  document.getElementById('tr3').innerHTML = addComas(rangs[1]);
+  document.getElementById('tr4').innerHTML = addComas(rangs[0]);
+}
+
 
 var div = d3
   .select("#wrapper")
@@ -48,9 +85,6 @@ var mapCan = d3
   .append("svg")
   .attr("width", wCan)
   .attr("height", hCan);
-
-
-// d3.select("#year").html(trimestres[trimestres.length - 1].substring(0, 4));
 
 var height = 330,
   width = 885,
@@ -282,7 +316,10 @@ d3.json(datosUrl, function(dJson) {
         if (!curWeekFrom)
           curWeekFrom = '2020-02-28'
         curWeekTo = Object.keys(dJson)[index];
-        d3.select("#year").html(curWeekFrom + '..' + curWeekTo);
+        curWeekFrom = curWeekFrom.substring(8, 11) + '/' + curWeekFrom.substring(5, 7) + '/' + curWeekFrom.substring(0, 4);
+        curWeekTo = curWeekTo.substring(8, 11) + '/' + curWeekTo.substring(5, 7) + '/' + curWeekTo.substring(0, 4);
+
+        d3.select("#setmana_rang").html(curWeekFrom + ' - ' + curWeekTo);
 
         // Setmana seleccionada
         var curWeekKey = Object.keys(dJson)[index];
@@ -294,7 +331,7 @@ d3.json(datosUrl, function(dJson) {
           var curProvKey = parseInt(Object.keys(weekData)[mapCode]);
           var dataProv = weekData[curProvKey];
           // Actualizar el valor
-          d.properties.value = dataProv['num_casos2'];
+          d.properties.value = dataProv[curCriteri()];
 
           var value = d.properties.value;
           if (value) {
@@ -312,12 +349,16 @@ d3.json(datosUrl, function(dJson) {
             var curProvKey = parseInt(Object.keys(weekData)[mapCode]);
             var dataProv = weekData[curProvKey];
 
+            // console.log(dataProv);
+            var keyCriteri = curCriteri();
+            var label = labelCriteri[keyCriteri];
+            var valueCriteri = addComas(dataProv[keyCriteri]);
+
             div.style("opacity", 0.9);
             div
               .html(
-                "<pre>" +
-                  JSON.stringify(dataProv, null, 2) +
-                  "</pre> <br>"
+                `<div><b>${dataProv['province']}</b></div>` +
+                  `<div>${label}: <b>${valueCriteri}</b></div>`
               )
               .style("left", function() {
                 if (d3.event.pageX > 780) {
@@ -326,7 +367,8 @@ d3.json(datosUrl, function(dJson) {
                   return d3.event.pageX + 23 + "px";
                 }
               })
-              .style("top", d3.event.pageY - 20 + "px");
+              .style("top", d3.event.pageY - 20 + "px")
+              .style("width", "auto");
           })
           .on("mouseout", function() {
             return div.style("opacity", 0);
@@ -341,7 +383,7 @@ d3.json(datosUrl, function(dJson) {
           var curProvKey = parseInt(Object.keys(weekData)[mapCode]);
           var dataProv = weekData[curProvKey];
           // Actualizar el valor
-          d.properties.value = dataProv['num_casos2'];
+          d.properties.value = dataProv[curCriteri()];
 
           var value = d.properties.value;
           if (value) {
@@ -349,26 +391,6 @@ d3.json(datosUrl, function(dJson) {
           } else {
             return "#ccc";
           }
-
-          //
-          // for (var i = 0; i < data.length; i++) {
-          //   var codeState = data[i].code;
-          //   var dataValue = data[i][trimestres[index]];
-          //   for (var j = 0; j < can.features.length; j++) {
-          //     var jsonState = can.features[j].properties.code;
-          //     if (codeState == jsonState) {
-          //       can.features[j].properties.value = dataValue;
-          //       break;
-          //     }
-          //   }
-          // }
-          // var value = d.properties.value;
-          // if (value) {
-          //   return getColor(value);
-          // } else {
-          //   return "#ccc";
-          // }
-
 
         });
 
@@ -401,68 +423,46 @@ d3.json(datosUrl, function(dJson) {
             return div.style("opacity", 0);
           })
           .on("mouseout", mouseout);
-        // maxMin(data, index);
+         maxMin(index);
       }
-      // maxMin(data, aux);
+      maxMin(aux);
 
 
 
-      function maxMin(d, index) {
-        // TODO: Trobar, per la setmana seleccionada, el max i el mínim del concepte a que ens estem referint
-        return null;
+      function maxMin(index) {
+        var curWeekKey = Object.keys(dJson)[index];
+        var weekData = dJson[curWeekKey];
+        var max = 0
+        var min = 999999999;
+        var provMax = '';
+        var provMin = '';
 
-
-
-        d3.select("#minimoParo").html("");
-        d3.select("#maximoParo").html("");
-        d3.select("#mediaParo").html("");
-        var datos = [];
-        var provincia = [];
-        for (var i = 0; i < data.length - 1; i++) {
-          //-1 para que no cargue Nacional
-          datos.push(d[i][trimestres[index]]);
-          provincia.push(d[i].state);
-        }
-        var max_min = d3.extent(datos);
-        // console.log(max_min);
-        var provinciaMax;
-        var provinciaMin;
-        for (var j = 0; j < data.length - 1; j++) {
-          if (max_min[0] == datos[j]) {
-            provinciaMin = provincia[j];
+        for (const wdi in weekData) {
+          var entry = weekData[wdi];
+          if (entry[curCriteri()] > max) {
+            max = entry[curCriteri()]
+            provMax = entry.province;
           }
-          if (max_min[1] == datos[j]) {
-            provinciaMax = provincia[j];
+          if (entry[curCriteri()] < min) {
+            min = entry[curCriteri()]
+            provMin = entry.province;
           }
         }
-        var nombreMediaParo = d3
-          .select("#mediaParo")
-          .html(addComas(data[52][trimestres[index]]) + "%");
-        var nombreProvinciaMax = d3
-          .select("#maximoParo")
-          .html(
-            addComas(max_min[1]) +
-              "%<br>" +
-              "<span id='provincia'>" +
-              provinciaMax +
-              "</span>"
-          );
-        var nombreProvinciaMin = d3
-          .select("#minimoParo")
-          .html(
-            addComas(max_min[0]) +
-              "%<br>" +
-              "<span id='provincia'>" +
-              provinciaMin +
-              "</span"
-          );
+        document.getElementById('maximo').innerHTML = `${provMax}: ${addComas(max)}`;
+        document.getElementById('minimo').innerHTML = `${provMin}: ${addComas(min)}`;
       }
-
 
       ////////////////////////////////
       // Init:
       ////////////////////////////////
-      drawMap(62)
+      d3.select("#criteri").on('change', function () {
+        // console.log(this.value)
+        refreshLeyenda();
+        drawMap(aux)
+      })
+
+      refreshLeyenda();
+      drawMap(aux)
 
     });
   });
