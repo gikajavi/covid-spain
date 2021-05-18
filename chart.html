@@ -53,21 +53,22 @@
     var minDate = new Date();
     var maxDate = new Date();
 
+    values = [1, 27, 118, 383, 394, 244, 133, 58, 37, 54, 29, 38, 10, 14, 4, 5, 4, 11, 3, 12, 9, 12, 76, 132, 154, 276, 430, 405, 553, 772, 970, 1415, 1747, 2376, 3115, 2884, 2824, 1977, 1262, 855, 637, 903, 669, 812, 1231, 2562, 2969, 2728, 1867, 1140, 597, 384, 344, 304, 280, 378, 527, 1039, 1211, 1109, 793, 710, 460];
 
-    var urlData = 'https://bl.ocks.org/emmasaunders/raw/f55caf3a742aac10a5d44f58374bf343/prices.csv';
-    d3.csv(urlData)
-        .row(function(d) { return { month: parseDate(d.month), price: Number(d.price.trim().slice(1))}; })
-        .get(function(error, rows) {
-            max = d3.max(rows, function(d) { return d.price; });
-            minDate = d3.min(rows, function(d) {return d.month; });
-            maxDate = d3.max(rows, function(d) { return d.month; });
+    // var urlData = 'https://raw.githubusercontent.com/gikajavi/covid-spain/main/prices.csv';
+    // d3.csv(urlData)
+    //     .row(function(d) { return { month: parseDate(d.month), price: Number(d.price.trim().slice(1))}; })
+    //     .get(function(error, rows) {
 
+            max = d3.max(values, function(d) { return d; });
+            minDate = 0;
+            maxDate = 62;
 
             var y = d3.scale.linear()
                 .domain([0,max])
                 .range([height,0]);
 
-            var x = d3.time.scale()
+            var x = d3.scale.linear()
                 .domain([minDate,maxDate])
                 .range([0,width]);
 
@@ -79,9 +80,17 @@
                 .orient("bottom")
                 .scale(x);
 
+            var i = -1;
             var line = d3.svg.line()
-                .x(function(d){ return x(d.month); })
-                .y(function(d){ return y(d.price); })
+                .x(function(d) {
+                    i++;
+                    console.log(i, ' - ', d);
+                    return i*10;
+                })
+                .y(function(d){
+                    // console.log(d);
+                    return (d);
+                })
                 .interpolate("cardinal");
 
 
@@ -90,7 +99,7 @@
 
             chartGroup.append("path")
                 .attr("class","line")
-                .attr("d",function(d){ return line(rows); })
+                .attr("d",function(d){ return line(values); })
 
 
             chartGroup.append("g")
@@ -102,13 +111,7 @@
                 .attr("class","axis y")
                 .call(yAxis);
 
-
-
-        });
-
-
-
-
+        // });
 
 </script>
 </body>
