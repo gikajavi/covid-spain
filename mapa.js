@@ -267,20 +267,89 @@ d3.json(datosUrl, function(dJson) {
 
 
       function clickProvince(d) {
-        // console.log(d)
-        // alert('TODO: Dibujar el histograma!!');
-        // https://observablehq.com/@d3/histogram
-        // https://www.d3-graph-gallery.com/graph/histogram_basic.html
+        var curWeekKey = Object.keys(dJson)[aux];
+        var weekData = dJson[curWeekKey];
+        var mapCode = d.properties.code;
+        var nomProv = d.properties.name;
+
+
+        var values = []
+        curCrit = curCriteri();
+        Object.values(dJson).map(d => {
+          values.push( d[mapCode][curCrit] );
+        })
+
+        console.log(values);
+
+        // Dibuixar la gràfica en si
+        var margin = {left: 50, right: 20, top: 20, bottom: 50 };
+        var width = 960 - margin.left - margin.right;
+        var height = 500 - margin.top - margin.bottom;
+
+
+        var max = 0;
+        var xNudge = 50;
+        var yNudge = 20;
+
+
+
+        max = d3.max(values, function(v) { return v; });
+        minX = 0;
+        maxX = 62;
+
+
+        var y = d3.scale.linear()
+            .domain([0,max])
+            .range([height,0]);
+
+        var x = d3.time.scale()
+            .domain([minX,maxX])
+            .range([0,width]);
+
+        var yAxis = d3.svg.axis()
+            .orient("left")
+            .scale(y);
+
+        var xAxis = d3.svg.axis()
+            .orient("bottom")
+            .scale(x);
+
+
+        var line = d3.svg.line()
+            .x(function(d){ return d; })
+            .y(function(d){ return values[d]; })
+            .interpolate("cardinal");
+
+
+        var svg = d3.select("body").append("svg").attr("id","svg").attr("height","100%").attr("width","100%");
+        var chartGroup = svg.append("g").attr("class","chartGroup").attr("transform","translate("+xNudge+","+yNudge+")");
+
+        chartGroup.append("path")
+            .attr("class","line")
+            .attr("d",function(d){ return line[d]; })
+
+        chartGroup.append("g")
+            .attr("class","axis x")
+            .attr("transform","translate(0,"+height+")")
+            .call(xAxis);
+
+        chartGroup.append("g")
+            .attr("class","axis y")
+            .call(yAxis);
+
+
       }
 
 
       function mouseover(d) {
-        return ;
-
 
         d3.select(this)
           .attr("stroke-width", "1px")
           .attr("fill-opacity", "0.9");
+        return ;
+
+
+
         div.style("opacity", 0.9);
         div.html(
           "<b>" +
