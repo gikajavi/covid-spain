@@ -1,21 +1,31 @@
 //
 function addComas(n) {
   var formatValue = d3.format("0,000");
-  return formatValue(n)
-    .replace(",", ".")
+  return formatValue(Math.round(n*10)/10)
+    .replace(",", ";")
+    .replace(".", ",")
+    .replace(";", ".")
 }
 var colores = new Array("#ECC5B4", "#E3A78F", "#D9886C", "#D0694C", "#A55036");
 
 var labelCriteri = {
   num_casos2: 'Nous casos',
+  num_casos2_100kh: 'Nous casos / 100M Hab',
   num_casos_cum2: 'Total casos',
-  num_casos_avg7: 'Casos / 7 dies',
+  num_casos_cum2_100kh: 'Total casos / 100M Hab',
   num_hosp: 'Noves hospitalitzacions',
+  num_hosp_100kh: 'Noves hospis. / 100M Hab',
   num_hosp_cum: 'Total hospitalitzacions',
+  num_hosp_cum_100kh: 'Total hospis / 100M Hab',
   num_uci: 'Nous ingressos UCI',
+  num_uci_100kh: 'Nous ingressos UCI / 100M Hab',
   num_uci_cum: 'Total ingressos UCI',
+  num_uci_cum_100kh: 'Total ingressos UCI / 100M Hab',
   num_def: 'Nous decessos',
-  num_def_cum: 'Total decessos'
+  num_def_100kh: 'Nous decessos / 100M Hab',
+  num_def_cum: 'Total decessos',
+  num_def_cum_100kh: 'Total decessos / 100M Hab',
+  num_casos_avg7: 'Casos / 7 dies'
 }
 
 var rangos = {
@@ -27,7 +37,15 @@ var rangos = {
   num_uci: [50,25,10,5],
   num_uci_cum: [1000,500,250,100],
   num_def: [100,50,25,10],
-  num_def_cum: [2000,1000,500,200]
+  num_def_cum: [2000,1000,500,200],
+  num_casos2_100kh: [750,400,150,50],
+  num_casos_cum2_100kh: [8000,5000,2000,800],
+  num_hosp_100kh: [50,25,10,5],
+  num_hosp_cum_100kh: [1000,500,250,100],
+  num_uci_100kh: [5,3,2,0],
+  num_uci_cum_100kh: [80,40,20,10],
+  num_def_100kh: [25,15,5,0],
+  num_def_cum_100kh: [300,150,75,25]
 }
 
 function curCriteri() {
