@@ -300,28 +300,32 @@ d3.json(datosUrl, function(dJson) {
         console.log(values);
 
         // Dibuixar la gràfica en si
+
         var margin = {left: 50, right: 20, top: 20, bottom: 50 };
-        var width = 960 - margin.left - margin.right;
-        var height = 500 - margin.top - margin.bottom;
+
+        var width = 550 - margin.left - margin.right;
+        var height = 300 - margin.top - margin.bottom;
 
 
         var max = 0;
+
         var xNudge = 50;
         var yNudge = 20;
 
+        var minDate = new Date();
+        var maxDate = new Date();
 
 
-        max = d3.max(values, function(v) { return v; });
-        minX = 0;
-        maxX = 62;
-
+        max = d3.max(values, function(d) { return d; });
+        minDate = 0;
+        maxDate = 62;
 
         var y = d3.scale.linear()
             .domain([0,max])
             .range([height,0]);
 
-        var x = d3.time.scale()
-            .domain([minX,maxX])
+        var x = d3.scale.linear()
+            .domain([minDate,maxDate])
             .range([0,width]);
 
         var yAxis = d3.svg.axis()
@@ -332,19 +336,29 @@ d3.json(datosUrl, function(dJson) {
             .orient("bottom")
             .scale(x);
 
-
+        var i = -1;
         var line = d3.svg.line()
-            .x(function(d){ return d; })
-            .y(function(d){ return values[d]; })
+            .x(function(d) {
+              i++;
+              // console.log(i, ' - ', d);
+              return x(i);
+            })
+            .y(function(d){
+              // console.log(d);
+              return y(d);
+            })
             .interpolate("cardinal");
 
 
-        var svg = d3.select("body").append("svg").attr("id","svg").attr("height","100%").attr("width","100%");
+        document.getElementById('grafica').innerHTML = '';
+        var svg = d3.select("#grafica").append("svg").attr("id","svg").attr("height","100%").attr("width","100%");
         var chartGroup = svg.append("g").attr("class","chartGroup").attr("transform","translate("+xNudge+","+yNudge+")");
 
         chartGroup.append("path")
             .attr("class","line")
-            .attr("d",function(d){ return line[d]; })
+            .attr("d",function(d) {
+              return line(values);
+            })
 
         chartGroup.append("g")
             .attr("class","axis x")

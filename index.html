@@ -5,6 +5,37 @@
     <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
     <link href="mapa.css" rel="stylesheet" type="text/css" />
     <title>COVID Spain províncies</title>
+
+    <style>
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      text {
+        font-family: arial;
+        font-size: 12px;
+      }
+
+
+      path.line {
+        fill: none;
+        stroke: red;
+        stroke-width: 3px;
+      }
+
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: slategray;
+        shape-rendering: crispEdges;
+      }
+    </style>
+
+
   </head>
   <body>
     <div id="wrapper">
@@ -115,5 +146,8 @@
       <script src="mapa.js" type="text/javascript"></script>
 
     </div>
+
+    <div id="grafica" style="width: 2000px; height: 1000px;"></div>
+
   </body>
 </html>

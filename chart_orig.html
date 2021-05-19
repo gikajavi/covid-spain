@@ -35,22 +35,14 @@
 </head>
 <body>
 
-
-
-<h1>Lo siguiente es una gráfica súper chula</h1>
-
-<div id="grafica" style="width: 2000px; height: 1200px;">
-</div>
-
-
 <script type="text/javascript">
 
     var parseDate = d3.time.format("%m/%d/%Y").parse;
 
     var margin = {left: 50, right: 20, top: 20, bottom: 50 };
 
-    var width = 550 - margin.left - margin.right;
-    var height = 300 - margin.top - margin.bottom;
+    var width = 960 - margin.left - margin.right;
+    var height = 500 - margin.top - margin.bottom;
 
 
     var max = 0;
@@ -61,22 +53,20 @@
     var minDate = new Date();
     var maxDate = new Date();
 
-    values = [1, 27, 118, 383, 394, 244, 133, 58, 37, 54, 29, 38, 10, 14, 4, 5, 4, 11, 3, 12, 9, 12, 76, 132, 154, 276, 430, 405, 553, 772, 970, 1415, 1747, 2376, 3115, 2884, 2824, 1977, 1262, 855, 637, 903, 669, 812, 1231, 2562, 2969, 2728, 1867, 1140, 597, 384, 344, 304, 280, 378, 527, 1039, 1211, 1109, 793, 710, 460];
+    var urlData = 'https://raw.githubusercontent.com/gikajavi/covid-spain/main/prices.csv';
+    d3.csv(urlData)
+        .row(function(d) { return { month: parseDate(d.month), price: Number(d.price.trim().slice(1))}; })
+        .get(function(error, rows) {
+            max = d3.max(rows, function(d) { return d.price; });
+            minDate = d3.min(rows, function(d) {return d.month; });
+            maxDate = d3.max(rows, function(d) { return d.month; });
 
-    // var urlData = 'https://raw.githubusercontent.com/gikajavi/covid-spain/main/prices.csv';
-    // d3.csv(urlData)
-    //     .row(function(d) { return { month: parseDate(d.month), price: Number(d.price.trim().slice(1))}; })
-    //     .get(function(error, rows) {
-
-            max = d3.max(values, function(d) { return d; });
-            minDate = 0;
-            maxDate = 62;
 
             var y = d3.scale.linear()
                 .domain([0,max])
                 .range([height,0]);
 
-            var x = d3.scale.linear()
+            var x = d3.time.scale()
                 .domain([minDate,maxDate])
                 .range([0,width]);
 
@@ -88,28 +78,24 @@
                 .orient("bottom")
                 .scale(x);
 
-            var i = -1;
             var line = d3.svg.line()
-                .x(function(d) {
-                    i++;
-                    // console.log(i, ' - ', d);
-                    return x(i);
+                .x(function(d){
+                    console.log('X--', x(d.month))
+                    return x(d.month);
                 })
-                .y(function(d){
-                    // console.log(d);
-                    return y(d);
+                .y(function(d) {
+                    console.log('Y--', y(d.price))
+                    return y(d.price);
                 })
                 .interpolate("cardinal");
 
 
-            var svg = d3.select("#grafica").append("svg").attr("id","svg").attr("height","100%").attr("width","100%");
+            var svg = d3.select("body").append("svg").attr("id","svg").attr("height","100%").attr("width","100%");
             var chartGroup = svg.append("g").attr("class","chartGroup").attr("transform","translate("+xNudge+","+yNudge+")");
 
             chartGroup.append("path")
                 .attr("class","line")
-                .attr("d",function(d) {
-                    return line(values);
-                })
+                .attr("d",function(d){ return line(rows); })
 
 
             chartGroup.append("g")
@@ -121,11 +107,14 @@
                 .attr("class","axis y")
                 .call(yAxis);
 
-        // });
+
+
+        });
+
+
+
+
 
 </script>
-
-
-
 </body>
 </html>
