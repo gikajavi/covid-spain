@@ -1034,7 +1034,9 @@
                 div
                         .html(
                                 `<div><b>${dataProv['province']}</b></div>` +
-                                `<div style="margin-top: 10px;">${label}: <b>${valueCriteri}</b></div>` + htOtherKeys
+                                `<div style="margin-top: 10px;">${label}: <b>${valueCriteri}</b></div>` +
+                                '<div style="color: darkblue; margin-top: 8px; font-style: italic; font-weight: bold;">Fes clic per veure la gràfica de la variable</div>' +
+                                htOtherKeys
                         )
                         .style("left", function () {
                           if (d3.event.pageX > 780) {
