@@ -1,4 +1,3 @@
-//
 function addComas(n) {
   var formatValue = d3.format("0,000");
   return formatValue(Math.round(n*10)/10)
@@ -7,6 +6,7 @@ function addComas(n) {
     .replace(";", ".")
 }
 var colores = new Array("#ECC5B4", "#E3A78F", "#D9886C", "#D0694C", "#A55036");
+// var colores = new Array("rgb(180,191,240)", "rgb(164,177,237)", "rgb(128,146,232)", "rgb(99,121,229)", "rgb(10,68,225)");
 
 var labelCriteri = {
   num_casos2: 'Nous casos',
@@ -130,13 +130,6 @@ d3.json(datosUrl, function(dJson) {
         .attr("width", width_slider)
         .attr("height", height_slider);
 
-      // var axisyears = [
-      //   parseFloat(trimestres[0].substring(0, 4)),
-      //   parseFloat(trimestres[0].substring(0, 4)),
-      //   parseFloat(trimestres[0].substring(0, 4)),
-      //   parseFloat(trimestres[trimestres.length - 1].substring(0, 4))
-      // ];
-
       var pointerdata = [
         {
           x: 0,
@@ -156,12 +149,10 @@ d3.json(datosUrl, function(dJson) {
         }
       ];
 
-      // Nova escala
       var scale2 = d3.scale
           .linear()
           .domain([0,62])
           .rangeRound([0, width]);
-
 
       var x = d3.svg
         .axis()
@@ -281,7 +272,7 @@ d3.json(datosUrl, function(dJson) {
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseout", mouseout)
-          .on("click", clickProvince);
+        .on("click", clickProvince);
 
 
       function clickProvince(d) {
@@ -290,31 +281,21 @@ d3.json(datosUrl, function(dJson) {
         var mapCode = d.properties.code;
         var nomProv = d.properties.name;
 
-
         var values = []
         curCrit = curCriteri();
+        var nomCriteri = labelCriteri[curCrit];
         Object.values(dJson).map(d => {
           values.push( d[mapCode][curCrit] );
         })
 
-        console.log(values);
-
         // Dibuixar la gràfica en si
-
         var margin = {left: 50, right: 20, top: 20, bottom: 50 };
-
         var width = 550 - margin.left - margin.right;
-        var height = 300 - margin.top - margin.bottom;
-
+        var height = 360 - margin.top - margin.bottom;
 
         var max = 0;
-
         var xNudge = 50;
         var yNudge = 20;
-
-        var minDate = new Date();
-        var maxDate = new Date();
-
 
         max = d3.max(values, function(d) { return d; });
         minDate = 0;
@@ -340,18 +321,20 @@ d3.json(datosUrl, function(dJson) {
         var line = d3.svg.line()
             .x(function(d) {
               i++;
-              // console.log(i, ' - ', d);
               return x(i);
             })
             .y(function(d){
-              // console.log(d);
               return y(d);
             })
             .interpolate("cardinal");
 
 
-        document.getElementById('grafica').innerHTML = '';
-        var svg = d3.select("#grafica").append("svg").attr("id","svg").attr("height","100%").attr("width","100%");
+        var elGrafica = document.getElementById('grafica');
+        document.getElementById('grafica-nomprov').innerHTML = nomProv;
+        document.getElementById('grafica-nomvar').innerHTML = nomCriteri;
+        elGrafica.style.display = 'block';
+        document.getElementById('grafica-content').innerHTML = '';
+        var svg = d3.select("#grafica-content").append("svg").attr("id","svg").attr("height","100%").attr("width","100%");
         var chartGroup = svg.append("g").attr("class","chartGroup").attr("transform","translate("+xNudge+","+yNudge+")");
 
         chartGroup.append("path")
@@ -369,28 +352,14 @@ d3.json(datosUrl, function(dJson) {
             .attr("class","axis y")
             .call(yAxis);
 
-
       }
 
 
       function mouseover(d) {
-
         d3.select(this)
           .attr("stroke-width", "1px")
           .attr("fill-opacity", "0.9");
         return ;
-
-
-
-        div.style("opacity", 0.9);
-        div.html(
-          "<b>" +
-            d.properties.name +
-            "</b></br>Tasa paro: <b>" +
-            addComas(data[d.properties.code][trimestres[aux]]) +
-            "%</b> <br>" +
-            d.properties.comunidad
-        );
       }
 
       function mouseout(d) {
@@ -412,7 +381,7 @@ d3.json(datosUrl, function(dJson) {
           top: d3.event.pageY - 20 + "px"
         });
       }
-      //maxMin(data, aux);
+
       function drawMap(index) {
         curWeekFrom = Object.keys(dJson)[index-1];
         if (!curWeekFrom)
@@ -445,91 +414,81 @@ d3.json(datosUrl, function(dJson) {
         });
 
 
-        cont
-          .on("mousemove", function(d) {
-            var mapCode = d.properties.code;
-            var curProvKey = parseInt(Object.keys(weekData)[mapCode]);
-            var dataProv = weekData[curProvKey];
+      // Informació detallada de la província en què es fa hover
+      function provMouseMove(d) {
+        var mapCode = d.properties.code;
+        var curProvKey = parseInt(Object.keys(weekData)[mapCode]);
+        var dataProv = weekData[curProvKey];
+        var keyCriteri = curCriteri();
+        var label = labelCriteri[keyCriteri];
+        var valueCriteri = addComas(dataProv[keyCriteri]);
 
-            // console.log(dataProv);
-            var keyCriteri = curCriteri();
-            var label = labelCriteri[keyCriteri];
-            var valueCriteri = addComas(dataProv[keyCriteri]);
+        var htInnerKeys = '';
+        for (const key of Object.keys(labelCriteri)) {
+          if (key == keyCriteri) continue;
+          var valueOtherCriteri = addComas(dataProv[key]);
+          htInnerKeys += `<tr><td>${labelCriteri[key]}:</td> <td style="text-align: right;"><b>${valueOtherCriteri}</b></td></tr>`;
+          console.log(key);
+        }
+        var htOtherKeys = `<div style="border-top: 1px solid black; margin-top: 16px; padding-top: 14px; margin-bottom: 10px"><table>${htInnerKeys}</table></div>`;
 
-            div.style("opacity", 0.9);
-            div
-              .html(
+        div.style("opacity", 0.9);
+        div
+            .html(
                 `<div><b>${dataProv['province']}</b></div>` +
-                  `<div>${label}: <b>${valueCriteri}</b></div>`
-              )
-              .style("left", function() {
-                if (d3.event.pageX > 780) {
-                  return d3.event.pageX - 180 + "px";
-                } else {
-                  return d3.event.pageX + 23 + "px";
-                }
-              })
-              .style("top", d3.event.pageY - 20 + "px")
-              .style("width", "auto");
-          })
-          .on("mouseout", function() {
-            return div.style("opacity", 0);
-          })
-          .on("mouseout", mouseout);
-
-
-
-        isl.style("fill", function(d) {
-
-          var mapCode = d.properties.code;
-          var curProvKey = parseInt(Object.keys(weekData)[mapCode]);
-          var dataProv = weekData[curProvKey];
-          // Actualizar el valor
-          d.properties.value = dataProv[curCriteri()];
-
-          var value = d.properties.value;
-          if (value) {
-            return getColor(value);
-          } else {
-            return "#ccc";
-          }
-
-        });
-
-
-        isl
-          .on("mousemove", function(d) {
-
-            var mapCode = d.properties.code;
-            var curProvKey = parseInt(Object.keys(weekData)[mapCode]);
-            var dataProv = weekData[curProvKey];
-
-            div.style("opacity", 0.9);
-            div
-                .html(
-                    "<pre>" +
-                    JSON.stringify(dataProv, null, 2) +
-                    "</pre> <br>"
-                )
-
-              .style("left", function() {
-                if (d3.event.pageX > 780) {
-                  return d3.event.pageX - 180 + "px";
-                } else {
-                  return d3.event.pageX + 23 + "px";
-                }
-              })
-              .style("top", d3.event.pageY - 20 + "px");
-          })
-          .on("mouseout", function() {
-            return div.style("opacity", 0);
-          })
-          .on("mouseout", mouseout);
-         maxMin(index);
+                `<div style="margin-top: 10px;">${label}: <b>${valueCriteri}</b></div>` + htOtherKeys
+            )
+            .style("left", function () {
+              if (d3.event.pageX > 780) {
+                return d3.event.pageX - 180 + "px";
+              } else {
+                return d3.event.pageX + 23 + "px";
+              }
+            })
+            .style("top", d3.event.pageY - 20 + "px")
+            .style("width", "auto");
       }
-      maxMin(aux);
 
+      // Events per espanya continental i ses illes
+      cont
+        .on("mousemove", function(d) {
+          provMouseMove(d)
+        })
+        .on("mouseout", function() {
+          return div.style("opacity", 0);
+        })
+        .on("mouseout", mouseout);
 
+      isl.style("fill", function(d) {
+
+        var mapCode = d.properties.code;
+        var curProvKey = parseInt(Object.keys(weekData)[mapCode]);
+        var dataProv = weekData[curProvKey];
+        // Actualizar el valor
+        d.properties.value = dataProv[curCriteri()];
+
+        var value = d.properties.value;
+        if (value) {
+          return getColor(value);
+        } else {
+          return "#ccc";
+        }
+
+      });
+
+      // Events per canàries
+      isl
+        .on("mousemove", function(d) {
+          provMouseMove(d);
+        })
+        .on("mouseout", function() {
+          return div.style("opacity", 0);
+        })
+        .on("mouseout", mouseout);
+       maxMin(index);
+    }
+
+    maxMin(aux);
 
       function maxMin(index) {
         var curWeekKey = Object.keys(dJson)[index];
@@ -538,20 +497,24 @@ d3.json(datosUrl, function(dJson) {
         var min = 999999999;
         var provMax = '';
         var provMin = '';
+        var total = 0;
 
         for (const wdi in weekData) {
           var entry = weekData[wdi];
+          var val = entry[curCriteri()];
+          total += val;
           if (entry[curCriteri()] > max) {
-            max = entry[curCriteri()]
+            max = val;
             provMax = entry.province;
           }
           if (entry[curCriteri()] < min) {
-            min = entry[curCriteri()]
+            min = val;
             provMin = entry.province;
           }
         }
-        document.getElementById('maximo').innerHTML = `${provMax}: ${addComas(max)}`;
-        document.getElementById('minimo').innerHTML = `${provMin}: ${addComas(min)}`;
+        document.getElementById('maximo').innerHTML = `${provMax}: <b>${addComas(max)}</b>`;
+        document.getElementById('minimo').innerHTML = `${provMin}: <b>${addComas(min)}</b>`;
+        document.getElementById('mitja_nacional').innerHTML = addComas(total / 52);
       }
 
       ////////////////////////////////
@@ -561,6 +524,13 @@ d3.json(datosUrl, function(dJson) {
         // console.log(this.value)
         refreshLeyenda();
         drawMap(aux)
+      })
+
+      d3.select("#grafica-close").on('click', function () {
+        document.getElementById('grafica').style.display = 'none';
+      })
+      d3.select("#grafica-close-creueta").on('click', function () {
+        document.getElementById('grafica').style.display = 'none';
       })
 
       refreshLeyenda();

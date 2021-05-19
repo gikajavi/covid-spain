@@ -241,9 +241,12 @@ path.cursor {
 }
 
 .mediaNacional {
-  margin-bottom: 20px;
+  font-size: 24px;
+  margin-top: 30px;
+  margin-bottom: 0px;
   border-bottom: solid 1px #777;
   width: 300px;
+  padding-bottom: 6px;
 }
 
 #maximo {
@@ -270,14 +273,16 @@ path.cursor {
   width: 40px;
   float: right;
   margin: 20px 10px 0 0;
-  background: url(iconos.png)-99px 100px;
+  font-size: 40px;
+  color: #c0392b;
 }
 
 .iconoMinimo {
   height: 40px;
   width: 40px;
-  background: url(iconos.png)-178px 100px;
   float: right;
+  font-size: 40px;
+  color: #c0392b;
   margin: 20px 10px 0 0;
 }
 
@@ -400,4 +405,39 @@ path.cursor {
   border-top: solid 1px graytext;
   border-left: solid 1px graytext;
   border-radius: 30px 0;
+}
+
+#grafica {
+  padding: 10px;
+  color: #eee;
+  width: 550px;
+  height: 405px;
+  position: absolute;
+  background-color: #101010;
+  box-shadow: 0px 0px 20px 0px rgb(0 0 0 / 20%);
+  border-radius: 3px;
+  left: 270px;
+  top: 72px;
+  display: none;
+}
+
+
+#grafica-content {
+  width: 100%;
+  height: 89%;
+}
+
+#grafica-close {
+  /*font-weight: bold;*/
+  cursor: pointer;
+  text-align: center;
+  color: greenyellow;
+}
+
+#grafica-close-creueta {
+  cursor: pointer;
+}
+
+.grafica-top {
+  margin-bottom: 6px;
 }

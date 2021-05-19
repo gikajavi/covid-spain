@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
     <link href="mapa.css" rel="stylesheet" type="text/css" />
     <title>COVID Spain províncies</title>
@@ -23,8 +24,8 @@
 
       path.line {
         fill: none;
-        stroke: red;
-        stroke-width: 3px;
+        stroke: #149bab;
+        stroke-width: 2px;
       }
 
       .axis path,
@@ -42,8 +43,7 @@
       <div id="datosMapa">
         <div id="cajaDatos">
 
-          <div>
-            <div>Criteri:</div>
+          <div style="margin-top: 10px;">
             <div>
               <select id="criteri">
                 <option value="num_casos2">Nous casos</option>
@@ -78,14 +78,16 @@
 
           <div id="maxMin">
             <div id="media"></div>
-            <div class="mediaNacional">media nacional</div>
+            <div class="mediaNacional">Mitja Espanya: <b id="mitja_nacional">-</b></div>
+            
+
             <div class="icono">
               <div id="maximo">-</div>
-              <div class="iconoMaximo"></div>
+              <div class="iconoMaximo"><i class="fas fa-plus-circle"></i></div>
             </div>
             <div class="icono">
               <div id="minimo">-</div>
-              <div class="iconoMinimo"></div>
+              <div class="iconoMinimo"><i class="fas fa-minus-circle"></i></div>
             </div>
           </div>
 
@@ -125,12 +127,7 @@
               <div class="textoLeyenda color"></div>
             </div>
           </div>
-          <!--
-            <div class="k"><div class="color" style="background: rgb(255, 231, 235);"></div><div class="text"><span>2%</span></div></div>
-          -->
         </div>
-
-
 
       </div>
 
@@ -147,7 +144,15 @@
 
     </div>
 
-    <div id="grafica" style="width: 2000px; height: 1000px;"></div>
+    <div id="grafica" >
+      <div class="grafica-top">
+        <i id="grafica-close-creueta" style="float: right;" class="fas fa-times"></i>
+        <span>Província: <b id="grafica-nomprov">-</b></span>
+        <span style="margin-left: 20px">Variable: <b id="grafica-nomvar">-</b></span>
+      </div>
+      <div id="grafica-content" ></div>
+      <div id="grafica-close">- Tancar -</div>
+    </div>
 
   </body>
 </html>
