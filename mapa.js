@@ -6,7 +6,6 @@ function addComas(n) {
     .replace(";", ".")
 }
 var colores = new Array("#ECC5B4", "#E3A78F", "#D9886C", "#D0694C", "#A55036");
-// var colores = new Array("rgb(180,191,240)", "rgb(164,177,237)", "rgb(128,146,232)", "rgb(99,121,229)", "rgb(10,68,225)");
 
 var labelCriteri = {
   num_casos2: 'Nous casos',
